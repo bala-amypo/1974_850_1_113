@@ -86,28 +86,3 @@ private int riskLevel;
 }
 
 
-✅ EXCEPTION PACKAGE (AS IN YOUR IMAGE)
-
-ResourceNotFoundException.java
-
-
-
-GlobalExceptionHandler.java
-
-
-🔹 5. REPOSITORY FILES
- 
-package com.example.demo.repository;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.demo.entity.*;
-
-public interface StudentProfileRepository extends JpaRepository<StudentProfile, Long> {}
-public interface IntegrityCaseRepository extends JpaRepository<IntegrityCase, Long> {}
-public interface EvidenceRecordRepository extends JpaRepository<EvidenceRecord, Long> {}
-public interface PenaltyActionRepository extends JpaRepository<PenaltyAction, Long> {}
-public interface RepeatOffenderRecordRepository extends JpaRepository<RepeatOffenderRecord, Long> {}
-
-(In IDE, keep one interface per file)
-
-
