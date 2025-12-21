@@ -1,49 +1,5 @@
 
 
-📁 controller/IntegrityCaseController.java
- 
-
-
-📁 controller/EvidenceRecordController.java
- 
-package com.example.demo.controller;
-
-import org.springframework.web.bind.annotation.*;
-
-@RestController
-@RequestMapping("/evidence")
-public class EvidenceRecordController {
-
-@GetMapping
-public String getEvidence() {
-return "Evidence Record Controller Working";
-}
-}
-
-
-📁 controller/PenaltyActionController.java
- 
-
-
-
-📁 controller/RepeatOffenderRecordController.java
- 
-
-
-🔹 3. DTO FILES
-
-
-
-
-dto/RegisterRequest.java
- 
-
-
-dto/JwtResponse.java
- 
-
-
-
 🔹 4. ENTITY FILES
 entity/StudentProfile.java
  
