@@ -5,6 +5,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 public String generateToken(String username) {
-return username + "_token";
+return username + "token";
 }
 }
