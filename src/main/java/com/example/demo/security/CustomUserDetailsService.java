@@ -1,33 +1,13 @@
 🔹 8. SECURITY FILES (EXACT NAMES)
 security/JwtTokenProvider.java
 
+
+
 security/JwtAuthenticationFilter.java
 
-@Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-@Override
-protected void doFilterInternal(HttpServletRequest req,
-HttpServletResponse res,
-FilterChain chain)
-throws IOException, ServletException {
-chain.doFilter(req, res);
-}
-}
 
 security/JwtAuthenticationEntryPoint.java
 
-@Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
-@Override
-public void commence(HttpServletRequest req,
-HttpServletResponse res,
-AuthenticationException ex)
-throws IOException {
-res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-}
-}
 
 security/CustomUserDetailsService.java
 
