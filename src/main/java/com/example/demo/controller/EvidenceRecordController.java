@@ -32,54 +32,16 @@ return "Evidence Record Controller Working";
 
 🔹 3. DTO FILES
 
-LoginRequest.java
- 
-package com.example.demo.dto;
-
-public class LoginRequest {
-private String username;
-private String password;
-
-public String getUsername() { return username; }
-public void setUsername(String username) { this.username = username; }
-
-public String getPassword() { return password; }
-public void setPassword(String password) { this.password = password; }
-}
 
 
 
 dto/RegisterRequest.java
  
-package com.example.demo.dto;
-
-public class RegisterRequest {
-private String username;
-private String password;
-
-public String getUsername() { return username; }
-public void setUsername(String username) { this.username = username; }
-
-public String getPassword() { return password; }
-public void setPassword(String password) { this.password = password; }
-}
 
 
 dto/JwtResponse.java
  
-package com.example.demo.dto;
 
-public class JwtResponse {
-private String token;
-
-public JwtResponse(String token) {
-this.token = token;
-}
-
-public String getToken() {
-return token;
-}
-}
 
 
 🔹 4. ENTITY FILES
