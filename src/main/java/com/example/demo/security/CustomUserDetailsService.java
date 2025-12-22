@@ -9,6 +9,3 @@ public UserDetails loadUserByUsername(String username) {
 return new User(username, "password", new ArrayList<>());
 }
 }
-
-
-
