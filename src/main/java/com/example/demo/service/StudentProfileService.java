@@ -1,14 +1,15 @@
 package com.example.demo.service;
 
-import org.springframework.stereotype.Service;
-import com.example.demo.repository.StudentProfileRepository;
+import com.example.demo.entity.StudentProfile;
+import java.util.List;
 
-@Service
-public class StudentProfileService {
+public interface StudentProfileService {
 
-private final StudentProfileRepository repo;
+    StudentProfile createStudent(StudentProfile studentProfile);
 
-public StudentProfileService(StudentProfileRepository repo) {
-this.repo = repo;
-}
+    StudentProfile getStudentById(Long id);
+
+    List<StudentProfile> getAllStudents();
+
+    StudentProfile updateRepeatOffenderStatus(Long studentId);
 }

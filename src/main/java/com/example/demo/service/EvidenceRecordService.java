@@ -1,14 +1,8 @@
 package com.example.demo.service;
 
-import org.springframework.stereotype.Service;
-import com.example.demo.repository.EvidenceRecordRepository;
+import com.example.demo.entity.EvidenceRecord;
 
-@Service
-public class EvidenceRecordService {
+public interface EvidenceRecordService {
 
-    private final EvidenceRecordRepository repository;
-
-    public EvidenceRecordService(EvidenceRecordRepository repository) {
-        this.repository = repository;
-    }
+    EvidenceRecord submitEvidence(EvidenceRecord evidenceRecord);
 }

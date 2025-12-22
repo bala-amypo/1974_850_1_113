@@ -1,14 +1,8 @@
 package com.example.demo.service;
 
-import org.springframework.stereotype.Service;
-import com.example.demo.repository.PenaltyActionRepository;
+import com.example.demo.entity.PenaltyAction;
 
-@Service
-public class PenaltyActionService {
+public interface PenaltyActionService {
 
-    private final PenaltyActionRepository repository;
-
-    public PenaltyActionService(PenaltyActionRepository repository) {
-        this.repository = repository;
-    }
+    PenaltyAction addPenalty(PenaltyAction penaltyAction);
 }

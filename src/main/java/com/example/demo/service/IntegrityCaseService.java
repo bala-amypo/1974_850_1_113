@@ -1,14 +1,16 @@
 package com.example.demo.service;
 
-import org.springframework.stereotype.Service;
-import com.example.demo.repository.IntegrityCaseRepository;
+import com.example.demo.entity.IntegrityCase;
+import java.util.List;
+import java.util.Optional;
 
-@Service
-public class IntegrityCaseService {
+public interface IntegrityCaseService {
 
-    private final IntegrityCaseRepository repository;
+    IntegrityCase createCase(IntegrityCase integrityCase);
 
-    public IntegrityCaseService(IntegrityCaseRepository repository) {
-        this.repository = repository;
-    }
+    IntegrityCase updateCaseStatus(Long caseId, String newStatus);
+
+    List<IntegrityCase> getCasesByStudent(Long studentId);
+
+    Optional<IntegrityCase> getCaseById(Long caseId);
 }
