@@ -1,13 +1,8 @@
 package com.example.demo.service;
 
-import org.springframework.stereotype.Service;
+import com.example.demo.entity.RepeatOffenderRecord;
 
-@Service
-public class RepeatOffenderRecordService {
+public interface RepeatOffenderRecordService {
 
-    public int computeRepeatOffenderRecord(int cases) {
-        if (cases <= 1) return 1;
-        if (cases == 2) return 2;
-        return 4;
-    }
+    RepeatOffenderRecord recalculate(Long studentId);
 }
