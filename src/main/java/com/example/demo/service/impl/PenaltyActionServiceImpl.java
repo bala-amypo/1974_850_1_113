@@ -1,25 +1,37 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.PenaltyAction;
 import com.example.demo.entity.IntegrityCase;
-import com.example.demo.repository.*;
+import com.example.demo.entity.PenaltyAction;
+import com.example.demo.repository.IntegrityCaseRepository;
+import com.example.demo.repository.PenaltyActionRepository;
 import com.example.demo.service.PenaltyActionService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PenaltyActionServiceImpl implements PenaltyActionService {
-    private final PenaltyActionRepository penaltyRepository;
-    private final IntegrityCaseRepository caseRepository;
 
-    public PenaltyActionServiceImpl(PenaltyActionRepository pr, IntegrityCaseRepository cr) {
-        this.penaltyRepository = pr;
-        this.caseRepository = cr;
+    private final PenaltyActionRepository penaltyActionRepository;
+    private final IntegrityCaseRepository integrityCaseRepository;
+
+    public PenaltyActionServiceImpl(
+            PenaltyActionRepository penaltyActionRepository,
+            IntegrityCaseRepository integrityCaseRepository) {
+
+        this.penaltyActionRepository = penaltyActionRepository;
+        this.integrityCaseRepository = integrityCaseRepository;
     }
 
     @Override
-    public PenaltyAction addPenalty(PenaltyAction penalty) {
-        IntegrityCase c = penalty.getIntegrityCase();
-        // Requirement for test priority 23 [cite: 218]
-        c.setStatus("UNDER_REVIEW");
-        caseRepository.save(c);
-        return penaltyRepository.save(penalty);
+    public PenaltyAction addPenalty(PenaltyAction penaltyAction) {
+
+        IntegrityCase integrityCase = integrityCaseRepository
+                .findById(penaltyAction.getIntegrityCase().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Case not found"));
+
+        integrityCase.setStatus("UNDER_REVIEW");
+        integrityCaseRepository.save(integrityCase);
+
+        penaltyAction.setIntegrityCase(integrityCase);
+        return penaltyActionRepository.save(penaltyAction);
     }
 }

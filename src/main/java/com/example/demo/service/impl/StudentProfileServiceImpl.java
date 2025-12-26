@@ -1,56 +1,74 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.StudentProfile;
 import com.example.demo.entity.IntegrityCase;
+import com.example.demo.entity.RepeatOffenderRecord;
+import com.example.demo.entity.StudentProfile;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.*;
+import com.example.demo.repository.IntegrityCaseRepository;
+import com.example.demo.repository.RepeatOffenderRecordRepository;
+import com.example.demo.repository.StudentProfileRepository;
 import com.example.demo.service.StudentProfileService;
 import com.example.demo.util.RepeatOffenderCalculator;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class StudentProfileServiceImpl implements StudentProfileService {
-    private final StudentProfileRepository repository;
-    private final IntegrityCaseRepository caseRepository;
-    private final RepeatOffenderRecordRepository recordRepository;
+
+    private final StudentProfileRepository studentProfileRepository;
+    private final IntegrityCaseRepository integrityCaseRepository;
+    private final RepeatOffenderRecordRepository repeatOffenderRecordRepository;
     private final RepeatOffenderCalculator calculator;
 
-    public StudentProfileServiceImpl(StudentProfileRepository repository, IntegrityCaseRepository caseRepository, 
-                                     RepeatOffenderRecordRepository recordRepository, RepeatOffenderCalculator calculator) {
-        this.repository = repository;
-        this.caseRepository = caseRepository;
-        this.recordRepository = recordRepository;
+    public StudentProfileServiceImpl(
+            StudentProfileRepository studentProfileRepository,
+            IntegrityCaseRepository integrityCaseRepository,
+            RepeatOffenderRecordRepository repeatOffenderRecordRepository,
+            RepeatOffenderCalculator calculator) {
+
+        this.studentProfileRepository = studentProfileRepository;
+        this.integrityCaseRepository = integrityCaseRepository;
+        this.repeatOffenderRecordRepository = repeatOffenderRecordRepository;
         this.calculator = calculator;
     }
 
     @Override
-    public StudentProfile createStudent(StudentProfile student) {
-        // Must set to false on creation [cite: 196, 197]
-        student.setRepeatOffender(false);
-        return repository.save(student);
+    public StudentProfile createStudent(StudentProfile studentProfile) {
+        studentProfile.setRepeatOffender(false);
+        return studentProfileRepository.save(studentProfile);
     }
 
     @Override
     public StudentProfile getStudentById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        return studentProfileRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+    }
+
+    @Override
+    public List<StudentProfile> getAllStudents() {
+        return studentProfileRepository.findAll();
     }
 
     @Override
     public StudentProfile updateRepeatOffenderStatus(Long studentId) {
+
         StudentProfile student = getStudentById(studentId);
-        List<IntegrityCase> cases = caseRepository.findByStudentProfile(student);
-        
-        // Logical check for 2 or more cases [cite: 201, 202]
-        if (cases.size() >= 2) {
-            student.setRepeatOffender(true);
-            recordRepository.save(calculator.computeRepeatOffenderRecord(student, cases));
-        } else {
-            student.setRepeatOffender(false);
-        }
-        return repository.save(student);
-    }
-    
-    @Override
-    public List<StudentProfile> getAllStudents() {
-        return repository.findAll();
+
+        List<IntegrityCase> cases =
+                integrityCaseRepository.findByStudentProfile(student);
+
+        RepeatOffenderRecord record =
+                calculator.computeRepeatOffenderRecord(student, cases);
+
+        repeatOffenderRecordRepository.findByStudentProfile(student)
+                .ifPresentOrElse(existing -> {
+                    existing.setTotalCases(record.getTotalCases());
+                    existing.setFlagSeverity(record.getFlagSeverity());
+                    repeatOffenderRecordRepository.save(existing);
+                }, () -> repeatOffenderRecordRepository.save(record));
+
+        student.setRepeatOffender(record.getTotalCases() >= 2);
+
+        return studentProfileRepository.save(student);
     }
 }
