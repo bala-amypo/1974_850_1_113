@@ -1,9 +1,11 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
 import com.example.demo.repository.*;
 import com.example.demo.service.RepeatOffenderRecordService;
 import com.example.demo.util.RepeatOffenderCalculator;
+import com.example.demo.entity.StudentProfile;
+import com.example.demo.entity.RepeatOffenderRecord;
+import com.example.demo.entity.IntegrityCase;
 import java.util.List;
 
 public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordService {
@@ -21,5 +23,12 @@ public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordServ
         this.recordRepo = recordRepo;
         this.calculator = calculator;
     }
-    // Implement required methods using the calculator
+
+    // Example method required for Priority 49 [cite: 254]
+    public RepeatOffenderRecord updateAndGetRecord(Long studentId) {
+        StudentProfile student = studentRepo.findById(studentId).orElseThrow();
+        List<IntegrityCase> cases = caseRepo.findByStudentProfile(student);
+        RepeatOffenderRecord record = calculator.computeRepeatOffenderRecord(student, cases);
+        return recordRepo.save(record);
+    }
 }
