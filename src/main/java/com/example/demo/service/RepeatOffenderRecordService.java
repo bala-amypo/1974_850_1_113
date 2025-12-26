@@ -1,24 +1,9 @@
-package com.example.demo.service.impl; // Path: src/main/java/com/example/demo/service/impl/RepeatOffenderRecordServiceImpl.java
+package com.example.demo.service;
 
-import com.example.demo.repository.*;
-import com.example.demo.service.RepeatOffenderRecordService;
-import com.example.demo.util.RepeatOffenderCalculator;
+import com.example.demo.entity.RepeatOffenderRecord;
+import com.example.demo.entity.StudentProfile;
 
-public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordService {
-    private final StudentProfileRepository studentRepo;
-    private final IntegrityCaseRepository caseRepo;
-    private final RepeatOffenderRecordRepository recordRepo;
-    private final RepeatOffenderCalculator calculator;
+public interface RepeatOffenderRecordService {
 
-    // Constructor sequence must match the test setup 
-    public RepeatOffenderRecordServiceImpl(
-            StudentProfileRepository studentRepo, 
-            IntegrityCaseRepository caseRepo, 
-            RepeatOffenderRecordRepository recordRepo, 
-            RepeatOffenderCalculator calculator) {
-        this.studentRepo = studentRepo;
-        this.caseRepo = caseRepo;
-        this.recordRepo = recordRepo;
-        this.calculator = calculator;
-    }
+    RepeatOffenderRecord recalculate(StudentProfile studentProfile);
 }
