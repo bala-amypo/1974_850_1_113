@@ -1,12 +1,6 @@
 package com.example.demo.security;
 
-import com.example.demo.entity.AppUser;
-import com.example.demo.repository.AppUserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import com.example.demo.repository.AppUserRepository; // Assuming name based on Step 5.6
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,32 +9,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final AppUserRepository appUserRepository;
+    private final AppUserRepository userRepository;
 
-    public CustomUserDetailsService(AppUserRepository appUserRepository) {
-        this.appUserRepository = appUserRepository;
+    public CustomUserDetailsService(AppUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email)
-            throws UsernameNotFoundException {
-
-        AppUser user = appUserRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(
-                                "User not found with email: " + email));
-
-        List<GrantedAuthority> authorities =
-                user.getRoles()
-                        .stream()
-                        .map(role ->
-                                new SimpleGrantedAuthority(role.getName()))
-                        .collect(Collectors.toList());
-
-        return new User(
-                user.getEmail(),
-                user.getPassword(),
-                authorities
-        );
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 }
