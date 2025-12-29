@@ -1,50 +1,68 @@
-package com.example.demo.service.impl;
+package com.example.demo.config;
 
-import com.example.demo.entity.IntegrityCase;
-import com.example.demo.entity.RepeatOffenderRecord;
-import com.example.demo.entity.StudentProfile;
-import com.example.demo.repository.IntegrityCaseRepository;
-import com.example.demo.repository.RepeatOffenderRecordRepository;
-import com.example.demo.repository.StudentProfileRepository;
-import com.example.demo.service.RepeatOffenderRecordService;
-import com.example.demo.util.RepeatOffenderCalculator;
-import java.util.List;
-import org.springframework.stereotype.Service;
+import com.example.demo.security.CustomUserDetailsService;
+import com.example.demo.security.JwtAuthenticationEntryPoint;
+import com.example.demo.security.JwtAuthenticationFilter;
+import com.example.demo.security.JwtTokenProvider;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Service
-public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordService {
+@Configuration
+public class SecurityConfig {
 
-    private final StudentProfileRepository studentProfileRepository;
-    private final IntegrityCaseRepository integrityCaseRepository;
-    private final RepeatOffenderRecordRepository repeatOffenderRecordRepository;
-    private final RepeatOffenderCalculator calculator;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomUserDetailsService userDetailsService;
 
-    public RepeatOffenderRecordServiceImpl(
-            StudentProfileRepository studentProfileRepository,
-            IntegrityCaseRepository integrityCaseRepository,
-            RepeatOffenderRecordRepository repeatOffenderRecordRepository,
-            RepeatOffenderCalculator calculator) {
+    public SecurityConfig(
+            JwtTokenProvider jwtTokenProvider,
+            JwtAuthenticationEntryPoint authenticationEntryPoint,
+            CustomUserDetailsService userDetailsService) {
 
-        this.studentProfileRepository = studentProfileRepository;
-        this.integrityCaseRepository = integrityCaseRepository;
-        this.repeatOffenderRecordRepository = repeatOffenderRecordRepository;
-        this.calculator = calculator;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.userDetailsService = userDetailsService;
     }
 
-    @Override
-    public RepeatOffenderRecord recalculate(StudentProfile studentProfile) {
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        List<IntegrityCase> cases =
-                integrityCaseRepository.findByStudentProfile(studentProfile);
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 
-        RepeatOffenderRecord record =
-                calculator.computeRepeatOffenderRecord(studentProfile, cases);
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        repeatOffenderRecordRepository.save(record);
+        JwtAuthenticationFilter jwtFilter =
+                new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService);
 
-        studentProfile.setRepeatOffender(record.getTotalCases() >= 2);
-        studentProfileRepository.save(studentProfile);
+        http
+            .csrf(csrf -> csrf.disable())
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/auth/**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**")
+                .permitAll()
+                .anyRequest().authenticated()
+            );
 
-        return record;
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 }
